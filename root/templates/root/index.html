@@ -1,0 +1,26 @@
+{% if state %}
+	
+	<p>State: {{state.state}}</p>
+	{% if state == "open" %}
+		<button onclick="{% url 'polls:vote' question.id %}" method="get"
+		type="button">close window</button> 
+	{% else %}
+		<button type="button">open window</button> 
+	{% endif %}
+
+	<p>Setting: {{state.using_setting}}</p>
+
+{% else %}
+    <p>There are no state.</p>
+{% endif %}
+
+{% if settings %}
+    <ul>
+    {% for setting in settings %}
+        <li>Name: {{setting.name}}, humid_threshold: {{setting.humid_threshold}}
+        , temp_threshold: {{setting.temp_threshold}}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>There are no setting.</p>
+{% endif %}
