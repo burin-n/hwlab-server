@@ -8,9 +8,10 @@ class State(models.Model):
 	using_setting = models.CharField(max_length=100, default = '')
 	cur_humid = models.IntegerField(default = -100)
 	cur_temp = models.IntegerField(default = -100)
+	manual = models.BooleanField(default = False)
 
 	def __str__(self):
-		return "state: " + self.state + ", setting: " + str(self.using_setting)
+		return "state: " + self.state + ", setting: " + str(self.using_setting) + ", manual: " + str(self.manual)
 
 
 class Setting(models.Model):

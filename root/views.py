@@ -5,14 +5,14 @@ from django.http import HttpResponse
 from .models import State,Setting
 
 def api(request):
-	if(request.method == 'GET'):
+	state = State.objects.all()[0]
+	settings = Setting.objects.all()
+	setting = settings[0]
+
+	if(state.manual == True or request.method == 'GET' ):
 		return HttpResponse(State.objects.all()[0].state)
 	
 	elif(request.method == 'POST'):
-		print(request.body)
-		state = State.objects.all()[0]
-		settings = Setting.objects.all()
-		setting = settings[0]
 		if(len(state.using_setting) > 0 ):
 			for s in settings:
 				if(s.name == state.using_setting):
