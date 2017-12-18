@@ -1,13 +1,8 @@
 {% if state %}
 	
-	<p>State: {{state.state}}</p>
-	{% if state == "open" %}
-		<button onclick="{% url 'polls:vote' question.id %}" method="get"
-		type="button">close window</button> 
-	{% else %}
-		<button type="button">open window</button> 
-	{% endif %}
-
+    <h1>State: {{state.state}}</h1>
+    <p>Current Humiddity: {{state.cur_humid}}</p>
+    <p>Current Temperature: {{state.cur_temp}}</p>
 	<p>Setting: {{state.using_setting}}</p>
 
 {% else %}
