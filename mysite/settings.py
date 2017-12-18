@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['0.0.0.0','192.168.137.202','192.168.137.175','localhost']
 # Application definition
 
 INSTALLED_APPS = [
+    'django_tables2',
     'root.apps.RootConfig',
     'polls.apps.PollsConfig',
     'django.contrib.admin',
@@ -120,3 +121,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+
+    # Put strings here, like "/home/html/static" or "C:/www/django/static".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+    '/home/burin/Workspace/HWLab-server/root/static/',
+)

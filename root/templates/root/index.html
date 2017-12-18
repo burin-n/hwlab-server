@@ -1,23 +1,36 @@
+<title>Summary</title>
+{% load render_table from django_tables2 %}
+
 {% if state %}
-	
-    <h1>State: {{state.state}}</h1>
-    <p>Current Humiddity: {{state.cur_humid}}</p>
-    <p>Current Temperature: {{state.cur_temp}}</p>
-    <p>Manual: {{state.manual}}</p>
-    <p>--------------------------------------------</p>
-	<p>Setting: {{state.using_setting}}</p>
+
+    <!doctype html>
+    <html>
+        <h1><strong>State: </strong>{{state.state}}</h1>
+        <head>
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+        </head>
+        <body>
+            {% render_table state_table %}
+        </body>
+    </html>
 
 {% else %}
     <p>There are no state.</p>
 {% endif %}
 
+
 {% if settings %}
-    <ul>
-    {% for setting in settings %}
-        <li>Name: {{setting.name}}, humid_threshold: {{setting.humid_threshold}}
-        , temp_threshold: {{setting.temp_threshold}}</li>
-    {% endfor %}
-    </ul>
+    <!doctype html>
+    <html>
+        <h4>Avaiable Settings</h4>
+        <head>
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+        </head>
+        <body>
+            {% render_table settings %}
+        </body>
+    </html>
+
 {% else %}
     <p>There are no setting.</p>
 {% endif %}

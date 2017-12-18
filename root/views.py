@@ -1,18 +1,19 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-
+from django_tables2 import RequestConfig
 # Create your views here.
 from .models import State,Setting
+from .tables import SettingTable, StateTable
 
 def api(request):
-	state = State.objects.all()[0]
-	settings = Setting.objects.all()
-	setting = settings[0]
 
 	if(state.manual == True or request.method == 'GET' ):
 		return HttpResponse(State.objects.all()[0].state)
 	
 	elif(request.method == 'POST'):
+		state = State.objects.all()[0]
+		settings = Setting.objects.all()
+		setting = settings[0]
 		if(len(state.using_setting) > 0 ):
 			for s in settings:
 				if(s.name == state.using_setting):
@@ -75,11 +76,12 @@ def api(request):
 
 def index(request):
 	settings = Setting.objects.all()
-	state = State.objects.all()[0]
-
+	state = State.objects.all()
+#	RequestConfig(request).configure(StateTable(state))
 	context = {
-		'state' : state,
-		'settings' : settings,
+		'state' : state[0],
+		'state_table' : StateTable(state),
+		'settings' : SettingTable(settings),
     }
 	return render(request, 'root/index.html', context)
 
