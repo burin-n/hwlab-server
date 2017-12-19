@@ -6,12 +6,12 @@ from .models import State,Setting
 from .tables import SettingTable, StateTable
 
 def api(request):
+	state = State.objects.all()[0]
 
 	if(state.manual == True or request.method == 'GET' ):
-		return HttpResponse(State.objects.all()[0].state)
+		return HttpResponse(state.state)
 	
 	elif(request.method == 'POST'):
-		state = State.objects.all()[0]
 		settings = Setting.objects.all()
 		setting = settings[0]
 		if(len(state.using_setting) > 0 ):
@@ -21,7 +21,6 @@ def api(request):
 					break
 		
 		inputs = request.body.decode('utf-8').split('&')
-		
 		Changestate = False
 
 		name,val = inputs[0].split('=')
@@ -71,6 +70,10 @@ def api(request):
 			except ValueError:
 				print('type error')
 
+		if(val_humid != -1 ):
+			state.humid = val_humid
+		if(val_temp != -1 ):
+			state.temp = val_temp
 		state.save()
 		return HttpResponse(state.state)
 

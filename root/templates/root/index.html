@@ -18,10 +18,10 @@
     <p>There are no state.</p>
 {% endif %}
 
-
 {% if settings %}
     <!doctype html>
     <html>
+        <p></p>
         <h4>Avaiable Settings</h4>
         <head>
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
@@ -34,3 +34,10 @@
 {% else %}
     <p>There are no setting.</p>
 {% endif %}
+
+<script>
+window.setTimeout(function () {
+    location.href = "http://192.168.137.175:8000/";
+}, 2500); // refresh/redirect after 5 seconds.
+</script>
+
