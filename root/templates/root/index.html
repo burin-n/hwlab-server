@@ -1,6 +1,7 @@
 <title>Summary</title>
 {% load render_table from django_tables2 %}
 
+<div style="margin-left: 25px; margin-right: 25px">
 {% if state %}
 
     <!doctype html>
@@ -22,7 +23,7 @@
     <!doctype html>
     <html>
         <p></p>
-        <h4>Avaiable Settings</h4>
+        <h4><strong>Current Setting</strong></h4>
         <head>
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
         </head>
@@ -35,9 +36,4 @@
     <p>There are no setting.</p>
 {% endif %}
 
-<script>
-window.setTimeout(function () {
-    location.href = "http://192.168.137.175:8000/";
-}, 2500); // refresh/redirect after 5 seconds.
-</script>
-
+</div>

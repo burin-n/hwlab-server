@@ -6,6 +6,7 @@ from .models import State,Setting
 from .tables import SettingTable, StateTable
 
 def api(request):
+	# pwm staet 10-45
 	state = State.objects.all()[0]
 
 	if(state.manual == True or request.method == 'GET' ):
@@ -20,66 +21,64 @@ def api(request):
 					setting = s
 					break
 		
-		inputs = request.body.decode('utf-8').split('&')
-		Changestate = False
+		Changestate = 0
+		isExtreme = False
+		inputs = {}
 
-		name,val = inputs[0].split('=')
-		name1 = ''
-		val1 = -1
-		if(len(inputs) > 1 ):
-			name1,val1 = inputs[1].split('=')
-		val_humid = -1
-		val_temp = -1
+		for e in request.body.decode('utf-8').split('&'):
+			key,val = e.split("=")
+			inputs[key] = val
 
-		if(name == 'humidity'):
-			val_humid = val
-		elif(name1 == 'humidity'):
-			val_humid = val1
-
-		if(name == 'temperature'):
-			val_temp = val
-		elif(name1 == 'temperature'):
-			val_temp = val1
-
-		if(val_humid != -1):			
+		new_state = state.state
+		if('humidity' in inputs.keys()):			
+			print('humid')
 			try:
-				val_humid = int(val_humid)
+				val_humid = int(inputs['humidity'])
+				state.humid = val_humid
 				if(val_humid > setting.humid_threshold):
 					if(state.state == "on"):
-						Changestate = True
-						state.state = "off"
+						Changestate += 1
 				else:
 					if(state.state == "off"):
-						Changestate = True
-						state.state = "on"
+						Changestate += 1
+				
+				if( abs(val_humid-setting.humid_threshold) >= extreme_humid):
+					isExtreme = True
+
 			except ValueError:
 				print('type error')
 
 		
-		if(val_temp != -1 and not Changestate):
+		if('temperature' in inputs.keys()):
+			print('temp')
 			try:
-				val_temp = int(val_temp)
-				if(val_temp > setting.humid_threshold):
+				val_temp = int(inputs['temperature'])
+				state.temp = val_temp
+				if(val_temp < setting.humid_threshold):
 					if(state.state == "on"):
-						Changestate = True
-						state.state = "off"
+						Changestate += 1
 				else:
 					if(state.state == "off"):
-						Changestate = True
-						state.state = "on"
+						Changestate += 1
+
+				if( abs(val_temp-setting.temp_threshold) > extreme_temp):
+					isExtreme = True
+
 			except ValueError:
 				print('type error')
 
-		if(val_humid != -1 ):
-			state.humid = val_humid
-		if(val_temp != -1 ):
-			state.temp = val_temp
+		if(Changestate == 2 or isExtreme):
+			if(state.state == "on"):
+				state.state = "off"
+			else:
+				state.staet = "on"
+
 		state.save()
 		return HttpResponse(state.state)
 
 def index(request):
-	settings = Setting.objects.all()
 	state = State.objects.all()
+	settings = Setting.objects.filter(name=state[0].setting)
 #	RequestConfig(request).configure(StateTable(state))
 	context = {
 		'state' : state[0],

@@ -11,5 +11,5 @@ class SettingTable(tables.Table):
 class StateTable(tables.Table):
     class Meta:
         model = State
-        fields = ('state','humid','temp','manual','using_setting')
+        fields = ('state','humid','temp','manual','setting')
         template = 'django_tables2/bootstrap.html'

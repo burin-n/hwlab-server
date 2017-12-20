@@ -5,7 +5,7 @@ from django.db import models
 
 class State(models.Model):
 	state = models.CharField(max_length=100, default='on')
-	using_setting = models.CharField(max_length=100, default = '')
+	setting = models.CharField(max_length=100, default = '')
 	humid = models.IntegerField(default = -100)
 	temp = models.IntegerField(default = -100)
 	manual = models.BooleanField(default = False)
