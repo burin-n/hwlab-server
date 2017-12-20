@@ -4,105 +4,105 @@ from django_tables2 import RequestConfig
 # Create your views here.
 from .models import State,Setting
 from .tables import SettingTable, StateTable
+# pwm state 10-45
+SERVO_RANGE = 45-10
 
 def api(request):
-	# pwm staet 10-45
+
 	state = State.objects.all()[0]
 
-	if(state.manual == True or request.method == 'GET' ):
-		return HttpResponse(state.state)
+	if(request.method == 'GET' ):
+		return HttpResponse("1"*state.state)
 	
 	elif(request.method == 'POST'):
 		settings = Setting.objects.all()
 		setting = settings[0]
-		if(len(state.using_setting) > 0 ):
+		if(len(state.setting) > 0 ):
 			for s in settings:
-				if(s.name == state.using_setting):
+				if(s.name == state.setting):
 					setting = s
 					break
 		
-		Changestate = 0
 		isExtreme = False
 		inputs = {}
+		N = 0
+		humid_pwm = 0
+		temp_pwm = 0
 
+		print(request.body.decode('utf-8').split('&'))
 		for e in request.body.decode('utf-8').split('&'):
 			key,val = e.split("=")
 			inputs[key] = val
 
-		new_state = state.state
 		if('humidity' in inputs.keys()):			
-			print('humid')
 			try:
 				val_humid = int(inputs['humidity'])
 				state.humid = val_humid
-				if(val_humid > setting.humid_threshold):
-					if(state.state == "on"):
-						Changestate += 1
-				else:
-					if(state.state == "off"):
-						Changestate += 1
-				
-				if( abs(val_humid-setting.humid_threshold) >= extreme_humid):
-					isExtreme = True
 
+				humid_range = (setting.max_humid - setting.min_humid)//2
+				center = (setting.min_humid+setting.max_humid)/2
+				distant = abs(val_humid - center)
+
+				if(distant >= humid_range):
+					isExtreme = True
+				else:
+					humid_pwm = (SERVO_RANGE*(humid_range-distant))/humid_range
+				N+=1
+						
 			except ValueError:
 				print('type error')
 
 		
 		if('temperature' in inputs.keys()):
-			print('temp')
 			try:
 				val_temp = int(inputs['temperature'])
 				state.temp = val_temp
-				if(val_temp < setting.humid_threshold):
-					if(state.state == "on"):
-						Changestate += 1
-				else:
-					if(state.state == "off"):
-						Changestate += 1
 
-				if( abs(val_temp-setting.temp_threshold) > extreme_temp):
+				temp_range = (setting.max_temp - setting.min_temp)//2
+				center = (setting.max_temp + setting.min_temp)/2
+				distant = abs(val_temp - center)
+				
+				if(distant >= temp_range):
 					isExtreme = True
+				else:
+					temp_pwm = (SERVO_RANGE*(temp_range-distant))/temp_range
+				N+=2
 
 			except ValueError:
 				print('type error')
 
-		if(Changestate == 2 or isExtreme):
-			if(state.state == "on"):
-				state.state = "off"
+		if(not state.manual and N>0):
+			if(isExtreme):
+				state.state = 10
 			else:
-				state.staet = "on"
+				deg = int(humid_pwm+temp_pwm)//N	
+				if(state.degree == True):
+					state.state = deg + 10
+				else:
+					state.state = 45
+
 
 		state.save()
-		return HttpResponse(state.state)
+
+		return HttpResponse("1"*state.state)
 
 def index(request):
 	state = State.objects.all()
 	settings = Setting.objects.filter(name=state[0].setting)
-#	RequestConfig(request).configure(StateTable(state))
+	deg = ((state[0].state-10)*180)//SERVO_RANGE
+	deg = max(0,min(deg,180))
+	text = ''
+	if(deg == 0):
+		text = "Close"
+	else:
+		text = "Open {} degrees".format(deg)
+
+
+	
 	context = {
+		'text' : text,
 		'state' : state[0],
 		'state_table' : StateTable(state),
 		'settings' : SettingTable(settings),
     }
 	return render(request, 'root/index.html', context)
-
-
-
-def toggle(request):
-    question = get_object_or_404(Question, pk=question_id)
-    try:
-        selected_choice = question.choice_set.get(pk=request.POST['choice'])
-    except (KeyError, Choice.DoesNotExist):
-        # Redisplay the question voting form.
-        return render(request, 'polls/detail.html', {
-            'question': question,
-            'error_message': "You didn't select a choice.",
-        })
-    else:
-        selected_choice.votes += 1
-        selected_choice.save()
-        # Always return an HttpResponseRedirect after successfully dealing
-        # with POST data. This prevents data from being posted twice if a
-        # user hits the Back button.
-        return HttpResponseRedirect('')
