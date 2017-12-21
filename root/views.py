@@ -5,7 +5,9 @@ from django_tables2 import RequestConfig
 from .models import State,Setting
 from .tables import SettingTable, StateTable
 # pwm state 10-45
-SERVO_RANGE = 45-10
+MAX_SERVO = 40
+MIN_SERVO = 12
+SERVO_RANGE = MAX_SERVO - MIN_SERVO
 
 def api(request):
 
@@ -73,13 +75,13 @@ def api(request):
 
 		if(not state.manual and N>0):
 			if(isExtreme):
-				state.state = 10
+				state.state = MIN_SERVO
 			else:
 				deg = int(humid_pwm+temp_pwm)//N	
 				if(state.degree == True):
-					state.state = deg + 10
+					state.state = deg + 12
 				else:
-					state.state = 45
+					state.state = MAX_SERVO
 
 
 		state.save()

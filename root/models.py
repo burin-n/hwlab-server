@@ -4,7 +4,7 @@ from django.db import models
 
 
 class State(models.Model):
-	state = models.IntegerField(default='10')
+	state = models.IntegerField(default='12')
 	setting = models.CharField(max_length=100, default = '')
 	humid = models.IntegerField(default = -100)
 	temp = models.IntegerField(default = -100)
