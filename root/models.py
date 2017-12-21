@@ -18,8 +18,8 @@ class State(models.Model):
 class Setting(models.Model):
 	name = models.CharField(max_length=100)
 	min_humid = models.IntegerField(default=35)
-	min_temp = models.IntegerField(default=20)
 	max_humid = models.IntegerField(default=55)
+	min_temp = models.IntegerField(default=20)
 	max_temp = models.IntegerField(default=30)
 
 	def __str__(self):
